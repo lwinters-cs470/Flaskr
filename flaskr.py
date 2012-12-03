@@ -54,6 +54,35 @@ def close_db_connection(exception):
         top.sqlite_db.close()
 
 
+@app.route('/test')
+def test():
+    db = get_db()
+    cur = db.execute('SELECT * FROM users WHERE username = "cs350"')
+    users = ' '
+    for row in cur.fetchall():
+        users += row[0]
+    return users
+
+@app.route('/newtable')
+def newtable():
+    db = get_db()
+    cur = db.execute('INSERT INTO studio (name, address)'
+                     ' VALUES(?, ?)', 
+                     ['MGM', '500 HollyWood Blvd.'])
+    db.commit()
+    return 'studio added'
+
+@app.route('/movies')
+def movies():
+    db = get_db()
+    cur = db.execute('SELECT * FROM movies ORDER BY year')
+    movies = ''
+    for row in cur.fetchall():
+        movies += row [0] + ': ' + str(row [1]) + ', ' + row [2] + ', ' + row [3] + '<br>'
+    return movies
+    
+    
+
 @app.route('/')
 def show_entries():
     db = get_db()
@@ -73,7 +102,7 @@ def add_entry():
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
-
+    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
